@@ -1,0 +1,28 @@
+﻿version: '3.8'
+
+services:
+  app:
+    image: saudeia:dev
+    build: ./
+    ports:
+      - "8080:8080"  # Expondo a porta 80 do container para a 8080 na máquina local
+    depends_on:
+      - mysql  # Garante que o serviço mysql esteja pronto antes de iniciar o app
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  # Ajuste conforme necessári
+
+  mysql:
+    image: mysql:latest
+    container_name: saudeIAmysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: test123
+      MYSQL_DATABASE: body
+      MYSQL_PASSWORD: test123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
