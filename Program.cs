@@ -14,7 +14,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-string connectionString = "Server=localhost; Port=3306; Database=SAUDEIA; Uid=root; Pwd=test123;";
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
+
+string connectionString = builder.Configuration.GetValue("connectionString", "");
 
 builder.Services.AddDbContext<Context>(
     dbContextOptions => dbContextOptions
@@ -23,10 +27,6 @@ builder.Services.AddDbContext<Context>(
         .EnableSensitiveDataLogging()
         .EnableDetailedErrors()
 );
-
-builder.Configuration
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
