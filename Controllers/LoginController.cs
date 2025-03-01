@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using SaudeIA.Data;
+using SaudeIA.Facades;
+using SaudeIA.Facades.Interfaces;
 using SaudeIA.Models;
+using SaudeIA.Models.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,18 +16,24 @@ namespace SaudeIA.Controllers
   public class LoginController : ControllerBase
   {
     private readonly IConfiguration _configuration;
+    private readonly Context _context;
+    private readonly UserFacade _userFacade;
 
-    public LoginController(IConfiguration configuration)
+    public LoginController(IConfiguration configuration, Context context, UserFacade userFacade)
     {
       _configuration = configuration;
+      _context = context;
+      _userFacade = userFacade;
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] UserModel user)
+    public IActionResult Login([FromBody] LoginModelDTO user)
     {
-      if (user.Username == "admin" && user.Password == _configuration.GetValue("baseSen", ""))
+      var result = _userFacade.LoginUserFacade(user);
+      if ((user.Email == "admin@saude.com" && user.Password == _configuration.GetValue("baseSen", "")) 
+         || result.IsCompletedSuccessfully)
       {
-        var token = GenerateJwtToken(user.Username);
+        var token = GenerateJwtToken(user.Email);
         return Ok(new { token });
       }
       return Unauthorized();

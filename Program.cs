@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Pomelo.EntityFrameworkCore.MySql;
 using SaudeIA.Data;
+using SaudeIA.Facades;
+using SaudeIA.Facades.Interfaces;
 using SaudeIA.Models;
 using System.Text;
 
@@ -14,21 +18,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<UserFacade>();
+
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 builder.Configuration
     .SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
 string connectionString = builder.Configuration.GetValue("connectionString", "");
 
-builder.Services.AddDbContext<Context>(
-    dbContextOptions => dbContextOptions
-        .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-        .LogTo(Console.WriteLine, LogLevel.Information)
-        .EnableSensitiveDataLogging()
-        .EnableDetailedErrors()
-);
 
-builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddDbContext<Context>(options =>
+    options.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(8, 0, 36)) // Ajuste conforme a versão do MySQL
+    ));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
