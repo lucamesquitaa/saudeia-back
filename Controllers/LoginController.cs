@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SaudeIA.Data;
 using SaudeIA.Facades;
@@ -27,11 +28,11 @@ namespace SaudeIA.Controllers
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginModelDTO user)
+    public async Task<IActionResult> Login([FromBody] LoginModelDTO user)
     {
-      var result = _userFacade.LoginUserFacade(user);
-      if ((user.Email == "admin@saude.com" && user.Password == _configuration.GetValue("baseSen", "")) 
-         || result.IsCompletedSuccessfully)
+      var result = await _userFacade.LoginUserFacade(user);
+      if ((user.Email == "admin@saude.com" && user.Password == _configuration.GetValue("baseSen", ""))
+         || (result is OkObjectResult))
       {
         var token = GenerateJwtToken(user.Email);
         return Ok(new { token });
@@ -43,9 +44,9 @@ namespace SaudeIA.Controllers
     {
       var claims = new[]
       {
-            new Claim(JwtRegisteredClaimNames.Sub, username),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+                    new Claim(JwtRegisteredClaimNames.Sub, username),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
 
       var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue("JwtToken", "")));
       var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

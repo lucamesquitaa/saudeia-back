@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using SaudeIA.Models;
 using SaudeIA.Models.DTOs;
 
@@ -7,7 +7,7 @@ namespace SaudeIA.Facades.Interfaces
 {
   public interface IUserFacade
   {
-    public Task<IResult> LoginUserFacade(LoginModelDTO loginDTO);
-    public Task<IResult> RegisterUserFacade(UserModel user);
+    public Task<IActionResult> LoginUserFacade(LoginModelDTO loginDTO);
+    public Task<IActionResult> RegisterUserFacade(UserModel user);
   }
 }

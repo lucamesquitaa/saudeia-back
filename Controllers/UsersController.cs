@@ -14,20 +14,17 @@ namespace SaudeIA.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly Context _context;
         private readonly UserFacade _userFacade;
 
         public UsersController(Context context, UserFacade userFacade)
         {
-          _context = context;
           _userFacade = userFacade;
         }
 
-    // GET: api/<ValuesController>
+        // GET: api/<ValuesController>
         [HttpGet]
-        public IEnumerable<UserModel> Get()
+        public void Get()
         {
-            return _context.User.ToList();
         }
 
     // GET api/<ValuesController>/5
@@ -39,9 +36,9 @@ namespace SaudeIA.Controllers
 
     // POST api/<ValuesController>
         [HttpPost]
-        public void Post([FromBody] UserModel obj)
+        public async Task<IActionResult> Post([FromBody] UserModel obj)
         {
-           _userFacade.RegisterUserFacade(obj);
+           return await _userFacade.RegisterUserFacade(obj);
         }
 
     // PUT api/<ValuesController>/5

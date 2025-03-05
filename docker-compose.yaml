@@ -1,5 +1,8 @@
 ﻿version: '3.8'
 
+networks:
+  minha_rede:
+
 services:
   mysql:
     image: mysql:latest
@@ -8,12 +11,27 @@ services:
     environment:
       MYSQL_ROOT_HOST: '%'
       MYSQL_ROOT_PASSWORD: test123
-      MYSQL_DATABASE: body
+      MYSQL_DATABASE: SAUDEIA
       MYSQL_PASSWORD: test123
     ports:
       - "3306:3306"
+    networks:
+      - minha_rede
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql  # Persistência de dados
+
+  web:
+    build: .
+    container_name: saudeIAapp
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - minha_rede
 
 volumes:
   mysql_data:
+    driver: local
+
