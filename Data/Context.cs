@@ -12,7 +12,8 @@ namespace SaudeIA.Data
     public DbSet<BodyModel> Body { get; set; }
 
     public Context(DbContextOptions<Context> options) : base(options)
-    {
+    { 
+
     }
   }
 }

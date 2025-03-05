@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SaudeIA.Data;
+using SaudeIA.Facades;
+using SaudeIA.Facades.Interfaces;
 using SaudeIA.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,19 +14,17 @@ namespace SaudeIA.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly Context _context;
+        private readonly UserFacade _userFacade;
 
-        public UsersController(Context context)
+        public UsersController(Context context, UserFacade userFacade)
         {
-          _context = context;
+          _userFacade = userFacade;
         }
 
-    // GET: api/<ValuesController>
-        [Authorize]
+        // GET: api/<ValuesController>
         [HttpGet]
-        public IEnumerable<UserModel> Get()
+        public void Get()
         {
-            return _context.User;
         }
 
     // GET api/<ValuesController>/5
@@ -35,10 +35,10 @@ namespace SaudeIA.Controllers
         }
 
     // POST api/<ValuesController>
-        [Authorize]
         [HttpPost]
-        public void Post([FromBody] UserModel obj)
+        public async Task<IActionResult> Post([FromBody] UserModel obj)
         {
+           return await _userFacade.RegisterUserFacade(obj);
         }
 
     // PUT api/<ValuesController>/5

@@ -11,8 +11,8 @@ using SaudeIA.Data;
 namespace SaudeIA.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250226212939_primeira")]
-    partial class primeira
+    [Migration("20250228232023_initas")]
+    partial class initas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,10 @@ namespace SaudeIA.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Password")
                         .IsRequired()
