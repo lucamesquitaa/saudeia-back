@@ -27,17 +27,17 @@ namespace SaudeIA.Controllers
       _userFacade = userFacade;
     }
 
-    [HttpPost("login")]
+    [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginModelDTO user)
     {
       var result = await _userFacade.LoginUserFacade(user);
       if ((user.Email == "admin@saude.com" && user.Password == _configuration.GetValue("baseSen", ""))
-         || (result is OkObjectResult))
+         || (result != Guid.Empty))
       {
         var token = GenerateJwtToken(user.Email);
-        return Ok(new { token });
+        return Ok(new { result, token });
       }
-      return Unauthorized();
+      return Unauthorized("Token de login expirado.");
     }
 
     private string GenerateJwtToken(string username)

@@ -5,6 +5,7 @@ using SaudeIA.Data;
 using SaudeIA.Facades;
 using SaudeIA.Facades.Interfaces;
 using SaudeIA.Models;
+using SaudeIA.Models.DTOs;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,38 +22,31 @@ namespace SaudeIA.Controllers
           _userFacade = userFacade;
         }
 
-        // GET: api/<ValuesController>
-        [HttpGet]
-        public void Get()
-        {
-        }
-
-    // GET api/<ValuesController>/5
+    // GET: api/<ValuesController>
         [Authorize]
-        [HttpGet("{id}")]
-        public void Get(int id)
+        [HttpGet]
+        public  async Task<IActionResult> Get()
         {
+          var users = await _userFacade.GetAllUserFacade();
+          if (users == null)
+            return BadRequest();
+        
+          return Ok(users);
         }
 
     // POST api/<ValuesController>
-        [HttpPost]
+        [HttpPost("Cadastro")]
         public async Task<IActionResult> Post([FromBody] UserModel obj)
         {
            return await _userFacade.RegisterUserFacade(obj);
         }
 
-    // PUT api/<ValuesController>/5
-        [Authorize]
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] UserModel obj)
-        {
-        }
-
-    // DELETE api/<ValuesController>/5
+        // DELETE api/<ValuesController>/5
         [Authorize]
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
+            return await _userFacade.DeleteUserFacade(id);
         }
     }
 }

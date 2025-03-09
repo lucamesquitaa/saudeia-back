@@ -10,6 +10,7 @@ namespace SaudeIA.Data
     public DbSet<UserModel> User { get; set; }
 
     public DbSet<BodyModel> Body { get; set; }
+    public DbSet<MetasModel> Metas { get; set; }
 
     public Context(DbContextOptions<Context> options) : base(options)
     { 
