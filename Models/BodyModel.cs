@@ -6,9 +6,10 @@ namespace SaudeIA.Models
   public class BodyModel
   {
     [Key]
-    public int Id { get; set; }
-    [ForeignKey("UserId")]
-    public Guid UserId { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    [ForeignKey("UserModelId")]
+    public Guid UserModelId { get; set; }
     public int Idade { get; set; }
     public double Peso { get; set; }
     public double Altura { get; set; }

@@ -6,9 +6,11 @@ namespace SaudeIA.Models
   public class UserModel
   {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Username { get; set; } = String.Empty;
     public string Email { get; set; } = String.Empty;
     public string Password { get; set; } = String.Empty;
+    public virtual ICollection<MetasModel>? Metas { get; set; } = new List<MetasModel>();
+    public virtual ICollection<BodyModel>? Body { get; set; } = new List<BodyModel>();
   }
 }
