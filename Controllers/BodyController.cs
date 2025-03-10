@@ -3,20 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using SaudeIA.Data;
 using SaudeIA.Facades;
 using SaudeIA.Facades.Interfaces;
-using SaudeIA.Models;
 using SaudeIA.Models.DTOs;
 
 namespace SaudeIA.Controllers
 {
-  [Route("api/[controller]")]
   [ApiController]
-  public class MetasController : ControllerBase
+  [Route("api/[controller]")]
+  public class BodyController : ControllerBase
   {
-    private readonly MetasFacade _metasFacade;
+    private readonly Context _context;
+    private readonly BodyFacade _bodyFacade;
 
-    public MetasController(Context context, MetasFacade metasFacade)
+    public BodyController(Context context, BodyFacade bodyFacade)
     {
-      _metasFacade = metasFacade;
+      _context = context;
+      _bodyFacade = bodyFacade;
     }
 
     // GET: api/<ValuesController>
@@ -24,7 +25,7 @@ namespace SaudeIA.Controllers
     [HttpGet()]
     public async Task<IActionResult> Get(string userId)
     {
-      var metas = await _metasFacade.GetMetasFacade(userId);
+      var metas = await _bodyFacade.GetBodyFacade(userId);
       if (metas == null)
         return BadRequest();
 
@@ -34,17 +35,9 @@ namespace SaudeIA.Controllers
     // POST api/<ValuesController>
     [Authorize]
     [HttpPost()]
-    public async Task<IActionResult> Post([FromBody] MetasDTO obj)
+    public async Task<IActionResult> Post([FromBody] BodyDTO obj)
     {
-      return await _metasFacade.PostMetasFacade(obj);
-    }
-
-    // Patch api/<ValuesController>/5
-    [Authorize]
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> Patch(string id)
-    {
-      return await _metasFacade.PatchMetasFacade(id);
+      return await _bodyFacade.PostBodyFacade(obj);
     }
 
     // DELETE api/<ValuesController>/5
@@ -52,7 +45,7 @@ namespace SaudeIA.Controllers
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-      return await _metasFacade.DeleteMetasFacade(id);
+      return await _bodyFacade.DeleteBodyFacade(id);
     }
   }
 }
