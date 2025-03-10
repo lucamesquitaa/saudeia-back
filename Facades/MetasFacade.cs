@@ -16,11 +16,12 @@ namespace SaudeIA.Facades
     {
       _context = context;
     }
-    public async Task<IEnumerable<MetasModel>> GetMetasFacade(Guid userId)
+    public async Task<IEnumerable<MetasModel>> GetMetasFacade(string userId)
     {
       try
       {
-        var metas = await _context.Metas.Where(u => u.UserModelId == userId)
+        var metas = await _context.Metas.Where(u => u.UserModelId.ToString() == userId)
+                                        .OrderByDescending( u => u.State)
                                         .AsNoTracking().ToListAsync();
           
         return metas;

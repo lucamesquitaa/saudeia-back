@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<UserFacade>();
 builder.Services.AddScoped<MetasFacade>();
+builder.Services.AddScoped<BodyFacade>();
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
