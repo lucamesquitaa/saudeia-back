@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MySqlConnector;
-using Pomelo.EntityFrameworkCore.MySql;
 using SaudeIA.Data;
 using SaudeIA.Facades;
 using SaudeIA.Facades.Interfaces;
@@ -26,12 +24,11 @@ builder.Configuration
     .SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
-string connectionString = builder.Configuration.GetValue("connectionstring", "");
+string connectionString = builder.Configuration.GetConnectionString("connectionstring");
 
 builder.Services.AddDbContext<Context>(options =>
-    options.UseMySql(
-        connectionString,
-        ServerVersion.AutoDetect(connectionString)
+    options.UseSqlServer(
+        connectionString
     ));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
