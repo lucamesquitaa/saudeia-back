@@ -48,4 +48,4 @@ jobs:
         app-name: 'SaudeIA20250315230541'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_d51575ba3a274bd295668f323f0a2f24 }}
-        images: 'saudeia20250315230643.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_a41cd424e52a4320bc7a0ce33ef6d431 }}/saudeia:${{ github.sha }}'
+        images: 'saudeia20250315230643.azurecr.io/lucamesquitaa/saudeia:${{ github.sha }}'
