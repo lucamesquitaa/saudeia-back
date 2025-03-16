@@ -9,6 +9,8 @@ using SaudeIA.Facades.Interfaces;
 using SaudeIA.Models;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,7 +65,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
           return context.Response.WriteAsync(result);
         }
       };
-    });
+    })
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi()
+            .AddMicrosoftGraph(builder.Configuration.GetSection("MicrosoftGraph"))
+            .AddInMemoryTokenCaches();
 
 builder.Services.AddAuthorization();
 
@@ -74,7 +80,7 @@ builder.Services.AddSwaggerGen(c =>
 {
   c.SwaggerDoc("v1", new OpenApiInfo { Title = "SaudeIA API", Version = "v1" });
 
-  // Adiciona a definição de segurança
+  // Adiciona a definiï¿½ï¿½o de seguranï¿½a
   c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
   {
     In = ParameterLocation.Header,
@@ -84,7 +90,7 @@ builder.Services.AddSwaggerGen(c =>
     Scheme = "Bearer"
   });
 
-  // Adiciona o requisito de segurança
+  // Adiciona o requisito de seguranï¿½a
   c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
