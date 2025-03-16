@@ -26,7 +26,7 @@ builder.Configuration
     .SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
-string connectionString = builder.Configuration.GetValue("connectionString", "");
+string connectionString = builder.Configuration.GetValue("connectionstring", "");
 
 builder.Services.AddDbContext<Context>(options =>
     options.UseMySql(
@@ -43,7 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue("JwtToken", "")))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue("jwttoken", "")))
       };
       options.Events = new JwtBearerEvents
       {
