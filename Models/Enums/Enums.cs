@@ -2,14 +2,14 @@
 
 namespace SaudeIA.Models.Enums
 {
-  public enum CategoriesMetaModel
+  public enum FrequenciaMetaModel
   {
-    [Description("Alimentação")]
-    Alimentacao = 1,
-    [Description("Atividade física")]
-    AtividadeFisica = 2,
-    [Description("Outros")]
-    Outros = 3
+    [Description("Todo dia")]
+    Day = 1,
+    [Description("Toda semana")]
+    Week = 2,
+    [Description("Não")]
+    None = 3,
   }
   public enum EstadoMetaModel
   {
@@ -18,5 +18,15 @@ namespace SaudeIA.Models.Enums
     [Description("Em andamento")]
     EmAndamento = 2,
   }
-
+  public enum HorarioMetaModel
+  {
+    [Description("Manhã")]
+    Manha = 1,
+    [Description("Tarde")]
+    Tarde = 2,
+    [Description("Noite")]
+    Noite = 3,
+    [Description("Dia inteiro")]
+    DiaInteiro = 4,
+  }
 }

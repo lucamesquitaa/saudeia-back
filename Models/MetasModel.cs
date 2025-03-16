@@ -13,7 +13,8 @@ namespace SaudeIA.Models
 
     [ForeignKey("UserModelId")]
     public Guid UserModelId { get; set; }
-    public CategoriesMetaModel? Category { get; set; }
+    public FrequenciaMetaModel Frequency { get; set; }
+    public HorarioMetaModel Hour { get; set; }
     public string Title { get; set; } = String.Empty;
     public string? Description { get; set; } = String.Empty;
     public EstadoMetaModel State { get; set; }

@@ -16,43 +16,28 @@ namespace SaudeIA.Facades
     {
       _context = context;
     }
-    public async Task<IEnumerable<GetAllUsers>> GetAllUserFacade()
+    public async Task<GetUser> LoginUserFacade(LoginModelDTO loginDTO)
     {
       try
       {
-        IEnumerable<GetAllUsers> users = await _context.User.AsNoTracking()
-          .Select(u => new GetAllUsers
-          {
-            Id = u.Id,
-            Username = u.Username,
-            Email = u.Email
-          }).ToListAsync();
+        GetUser? userDTO = await _context.User.Where(u => u.Username == loginDTO.Username
+                                               && u.Password == loginDTO.Password)
+                                            .Select(u => new GetUser
+                                            {
+                                              Id = u.Id,
+                                              Username = u.Username
+                                            })
+                                            .FirstOrDefaultAsync();
+        if (userDTO?.Id == Guid.Empty)
+        {
+          return null;
+        }
 
-        return users;
+        return userDTO;
       }
       catch (Exception e)
       {
         return null;
-      }
-    }
-    public async Task<Guid> LoginUserFacade(LoginModelDTO loginDTO)
-    {
-      try
-      {
-        var userId = await _context.User.Where(u => u.Email == loginDTO.Email
-                                               && u.Password == loginDTO.Password)
-                                        .Select(u => u.Id)
-                                        .FirstOrDefaultAsync();
-        if (userId == Guid.Empty)
-        {
-          return Guid.Empty;
-        }
-
-        return userId;
-      }
-      catch (Exception e)
-      {
-        return Guid.Empty;
       }
     }
     public async Task<IActionResult> RegisterUserFacade(UserModel user)
@@ -64,7 +49,7 @@ namespace SaudeIA.Facades
           return new NotFoundObjectResult("Preencha todas as informações.");
         }
 
-        var alreadyExists = await _context.User.FirstOrDefaultAsync(u => u.Email == user.Email);
+        var alreadyExists = await _context.User.FirstOrDefaultAsync(u => u.Username == user.Username);
 
         if (alreadyExists != null)
         {

@@ -22,6 +22,7 @@ namespace SaudeIA.Facades
       try
       {
         var bodies = await _context.Body.Where(u => u.UserModelId.ToString() == userId)
+                                        .OrderBy(x => x.CreateDate)
                                         .AsNoTracking().ToListAsync();
 
         return bodies;
