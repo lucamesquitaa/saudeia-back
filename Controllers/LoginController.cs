@@ -31,7 +31,7 @@ namespace SaudeIA.Controllers
     public async Task<IActionResult> Login([FromBody] LoginModelDTO user)
     {
       var result = await _userFacade.LoginUserFacade(user);
-      if (result.Id != Guid.Empty)
+      if (result != null && result.Id != Guid.Empty)
       {
         var token = GenerateJwtToken(user.Username);
         return Ok(new { result, token });
