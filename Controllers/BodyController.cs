@@ -11,12 +11,10 @@ namespace SaudeIA.Controllers
   [Route("api/[controller]")]
   public class BodyController : ControllerBase
   {
-    private readonly Context _context;
     private readonly BodyFacade _bodyFacade;
 
-    public BodyController(Context context, BodyFacade bodyFacade)
+    public BodyController(BodyFacade bodyFacade)
     {
-      _context = context;
       _bodyFacade = bodyFacade;
     }
 

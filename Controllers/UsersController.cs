@@ -22,18 +22,6 @@ namespace SaudeIA.Controllers
           _userFacade = userFacade;
         }
 
-    // GET: api/<ValuesController>
-        [Authorize]
-        [HttpGet]
-        public  async Task<IActionResult> Get()
-        {
-          var users = await _userFacade.GetAllUserFacade();
-          if (users == null)
-            return BadRequest();
-        
-          return Ok(users);
-        }
-
     // POST api/<ValuesController>
         [HttpPost("Cadastro")]
         public async Task<IActionResult> Post([FromBody] UserModel obj)

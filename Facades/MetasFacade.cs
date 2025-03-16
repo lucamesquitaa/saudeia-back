@@ -56,9 +56,13 @@ namespace SaudeIA.Facades
           Title = metas.Title,
           UserModelId = userId,
           State = EstadoMetaModel.EmAndamento,
-          Category = metas.Category == 1 ? CategoriesMetaModel.Alimentacao
-                     : metas.Category == 2 ? CategoriesMetaModel.AtividadeFisica
-                     : CategoriesMetaModel.Outros,
+          Frequency = metas.Frequency == 1 ? FrequenciaMetaModel.Day
+                     : metas.Frequency == 2 ? FrequenciaMetaModel.Week
+                     : FrequenciaMetaModel.None,
+          Hour = metas.Hour == 1 ? HorarioMetaModel.Manha
+                     : metas.Hour == 2 ? HorarioMetaModel.Tarde
+                     : metas.Hour == 3 ? HorarioMetaModel.Noite 
+                     : HorarioMetaModel.DiaInteiro,
           Description = metas.Description
         };
 
