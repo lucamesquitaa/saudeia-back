@@ -6,7 +6,9 @@
     },
     "identityapp1": {
       "connectionInfo": "Registro do aplicativo: uailuxa, Locatário: Diretório Padrão (lucamesquitaagmail.onmicrosoft.com - Microsoft Entra ID)",
-      "type": "identityapp.default",
+      "secretStore": null,
+      "resourceId": null,
+      "type": "identityapp.secretStore",
       "connectionId": "AzureAD:ClientSecret"
     }
   }
