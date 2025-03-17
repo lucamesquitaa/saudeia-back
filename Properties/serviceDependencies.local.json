@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user",
+      "dynamicId": null
+    },
+    "identityapp1": {
+      "connectionInfo": "Registro do aplicativo: uailuxa, Locatário: Diretório Padrão (lucamesquitaagmail.onmicrosoft.com - Microsoft Entra ID)",
+      "type": "identityapp.default",
+      "connectionId": "AzureAD:ClientSecret"
+    }
+  }
+}
