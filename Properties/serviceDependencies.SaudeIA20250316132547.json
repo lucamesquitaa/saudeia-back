@@ -5,7 +5,8 @@
       "secretStore": "AzureAppSettings",
       "resourceId": null,
       "type": "identityapp.default",
-      "connectionId": "AzureAD:HuD8Q~yRxncyOpY7kwiS2oMSp9GaMbWUn7qZHbTr"
+      "connectionId": "AzureAD:HuD8Q~yRxncyOpY7kwiS2oMSp9GaMbWUn7qZHbTr",
+      "auth-type": "IDENTITY",
     }
   }
 }
