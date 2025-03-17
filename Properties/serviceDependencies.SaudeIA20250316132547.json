@@ -1,9 +1,10 @@
 {
   "dependencies": {
     "identityapp1": {
-      "connectionInfo": "Registro do aplicativo: uailuxa, Locatário: Diretório Padrão (lucamesquitaagmail.onmicrosoft.com - Microsoft Entra ID)",
+      "connectionInfo": "Registro do aplicativo: asas, Locatário: Diretório Padrão (lucamesquitaagmail.onmicrosoft.com - Microsoft Entra ID)",
       "secretStore": "AzureAppSettings",
-      "type": "identityapp.secretStore",
+      "resourceId": null,
+      "type": "identityapp.default",
       "connectionId": "AzureAD:ClientSecret"
     }
   }
