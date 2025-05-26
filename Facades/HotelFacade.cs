@@ -20,16 +20,16 @@ namespace SaudeIA.Facades
     {
       try
       {
-        
-        GetAllHoteis hoteis = await _context.Hotel.AsNoTracking()
-                                              .Select(h => new GetAllHoteis
-                                              {
-                                                Id = h.Id,
-                                                Name = h.Name,
-                                                Url = h.Url
-                                              }).ToListAsync();
 
-        return (IEnumerable<GetAllHoteis>)hoteis;
+        var hoteis = await _context.Hotel.AsNoTracking()
+           .Select(h => new GetAllHoteis
+           {
+             Id = h.Id,
+             Name = h.Name,
+             Url = h.Url
+           }).ToListAsync();
+
+        return hoteis;
       }
       catch (Exception e)
       {
