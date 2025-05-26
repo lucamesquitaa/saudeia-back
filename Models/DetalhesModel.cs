@@ -26,6 +26,11 @@ namespace SaudeIA.Models
     public bool? Airpot { get; set; }
     public bool? Highway { get; set; }
     public bool? Hospital { get; set; }
+    public bool? Coffee { get; set; }
+    public bool? Wifi { get; set; }
+    public bool? Swimming { get; set; }
+    public bool? Cleaning { get; set; }
+    public bool? Gym { get; set; }
     public IEnumerable<ContatosModel> Contacts { get; set; } = new List<ContatosModel>();
     public IEnumerable<FotosDetalhesModel> Photos { get; set; } = new List<FotosDetalhesModel>();
   }

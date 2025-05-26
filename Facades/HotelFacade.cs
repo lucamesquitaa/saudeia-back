@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SaudeIA.Data;
 using SaudeIA.Facades.Interfaces;
 using SaudeIA.Models;
+using SaudeIA.Models.DTOs;
 
 namespace SaudeIA.Facades
 {
@@ -13,6 +14,27 @@ namespace SaudeIA.Facades
     public HotelFacade(Context context)
     {
       _context = context;
+    }
+
+    public async Task<IEnumerable<GetAllHoteis>> GetAllFacade()
+    {
+      try
+      {
+        
+        GetAllHoteis hoteis = await _context.Hotel.AsNoTracking()
+                                              .Select(h => new GetAllHoteis
+                                              {
+                                                Id = h.Id,
+                                                Name = h.Name,
+                                                Url = h.Url
+                                              }).ToListAsync();
+
+        return (IEnumerable<GetAllHoteis>)hoteis;
+      }
+      catch (Exception e)
+      {
+        return null;
+      }
     }
     public async Task<IEnumerable<DetalhesModel>> GetDetalhesFacade(string hotelId)
     {
@@ -53,6 +75,11 @@ namespace SaudeIA.Facades
           Airpot = hotel.Airpot,
           Highway = hotel.Highway,
           Hospital = hotel.Hospital,
+          Coffee = hotel.Coffee,
+          Wifi = hotel.Wifi,
+          Swimming = hotel.Swimming,
+          Cleaning = hotel.Cleaning,
+          Gym = hotel.Gym,
           Contacts = hotel.Contacts?.ToList() ?? new List<ContatosModel>(),
           Photos = hotel.Photos?.ToList() ?? new List<FotosDetalhesModel>()
         };
