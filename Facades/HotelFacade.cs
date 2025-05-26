@@ -55,10 +55,26 @@ namespace SaudeIA.Facades
     {
       try
       {
+        var novoId = Guid.NewGuid();
 
+        var contatos = hotel.Contacts?.Select(c => new ContatosModel
+        {
+          Id = Guid.NewGuid(),
+          Name = c.Name,
+          Contact = c.Contact,
+          DetalhesModelId = novoId
+        }).ToList() ?? new List<ContatosModel>();
+
+        var fotos = hotel.Photos?.Select(f => new FotosDetalhesModel
+        {
+          Id = Guid.NewGuid(),
+          Alt = f.Alt,
+          Url = f.Url,
+          DetalhesModelId = novoId
+        }).ToList() ?? new List<FotosDetalhesModel>();
         var hotelNew = new DetalhesModel
         {
-          Id = Guid.NewGuid(), // novo Id
+          Id = novoId,
           Name = hotel.Name,
           Url = hotel.Url,
           Description = hotel.Description,
@@ -80,8 +96,8 @@ namespace SaudeIA.Facades
           Swimming = hotel.Swimming,
           Cleaning = hotel.Cleaning,
           Gym = hotel.Gym,
-          Contacts = hotel.Contacts?.ToList() ?? new List<ContatosModel>(),
-          Photos = hotel.Photos?.ToList() ?? new List<FotosDetalhesModel>()
+          Contacts = contatos,
+          Photos = fotos
         };
 
         await _context.Hotel.AddAsync(hotelNew);
