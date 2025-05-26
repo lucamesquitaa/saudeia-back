@@ -10,9 +10,6 @@ using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Carregar secrets.json corretamente
-builder.Configuration.AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
-
 // Serviços
 builder.Services.AddScoped<UserFacade>();
 builder.Services.AddScoped<HotelFacade>();
