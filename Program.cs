@@ -20,6 +20,7 @@ builder.Services.AddScoped<HotelFacade>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 string connectionString = builder.Configuration.GetValue<string>("connectionstring", "");
+var jwtToken = Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("jwttoken", ""));
 
 builder.Services.AddDbContext<Context>(options =>
     options.UseNpgsql(connectionString)
@@ -35,7 +36,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-              Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("jwttoken", ""))
+              jwtToken
           )
       };
       options.Events = new JwtBearerEvents
