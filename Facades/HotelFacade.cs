@@ -41,6 +41,8 @@ namespace SaudeIA.Facades
       try
       {
         var hotel = await _context.Hotel.Where(u => u.Id.ToString() == hotelId)
+                                        .Include(h => h.Contacts)
+                                        .Include(h => h.Photos)
                                         .AsNoTracking().ToListAsync();
           
         return hotel;
