@@ -18,8 +18,20 @@ namespace SaudeIA.Controllers
       _hotelFacade = hotelFacade;
     }
 
+    [AllowAnonymous]
+    [HttpGet()]
+    public async Task<IActionResult> GetAll()
+    {
+      var hoteis = await _hotelFacade.GetAllFacade();
+      if (hoteis == null)
+        return BadRequest();
+
+      return Ok(hoteis);
+    }
+
+
     // GET: api/<ValuesController>
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet()]
     public async Task<IActionResult> Get(string hotelId)
     {
