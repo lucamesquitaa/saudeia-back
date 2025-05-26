@@ -13,11 +13,13 @@ namespace SaudeIA.Controllers
   {
     private readonly HotelFacade _hotelFacade;
 
-    public HotelController(Context context, HotelFacade hotelFacade)
+    public HotelController(HotelFacade hotelFacade)
     {
       _hotelFacade = hotelFacade;
     }
 
+
+    // GET: api/<ValuesController>
     [AllowAnonymous]
     [HttpGet()]
     public async Task<IActionResult> GetAll()
@@ -32,7 +34,7 @@ namespace SaudeIA.Controllers
 
     // GET: api/<ValuesController>
     [AllowAnonymous]
-    [HttpGet()]
+    [HttpGet("{hotelId}")]
     public async Task<IActionResult> Get(string hotelId)
     {
       var hotel = await _hotelFacade.GetDetalhesFacade(hotelId);
