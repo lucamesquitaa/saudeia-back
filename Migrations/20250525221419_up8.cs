@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SaudeIA.Migrations
 {
     /// <inheritdoc />
-    public partial class novvosql : Migration
+    public partial class up8 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,10 +15,10 @@ namespace SaudeIA.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,12 +29,12 @@ namespace SaudeIA.Migrations
                 name: "Body",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserModelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Peso = table.Column<double>(type: "float", nullable: false),
-                    Altura = table.Column<double>(type: "float", nullable: false),
-                    IMC = table.Column<double>(type: "float", nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserModelId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Peso = table.Column<double>(type: "double precision", nullable: false),
+                    Altura = table.Column<double>(type: "double precision", nullable: false),
+                    IMC = table.Column<double>(type: "double precision", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,13 +51,13 @@ namespace SaudeIA.Migrations
                 name: "Metas",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserModelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Frequency = table.Column<int>(type: "int", nullable: false),
-                    Hour = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    State = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserModelId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Frequency = table.Column<int>(type: "integer", nullable: false),
+                    Hour = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    State = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -1,37 +1,29 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SaudeIA.Data;
 using SaudeIA.Facades;
-using SaudeIA.Facades.Interfaces;
-using SaudeIA.Models;
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Carregar secrets.json corretamente
+builder.Configuration.AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
+// Serviços
 builder.Services.AddScoped<UserFacade>();
-builder.Services.AddScoped<MetasFacade>();
-builder.Services.AddScoped<BodyFacade>();
+builder.Services.AddScoped<HotelFacade>();
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-builder.Configuration
-    .SetBasePath(builder.Environment.ContentRootPath)
-    .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
-
-string connectionString = builder.Configuration.GetConnectionString("connectionstring");
+string connectionString = builder.Configuration.GetValue<string>("connectionstring", "");
 
 builder.Services.AddDbContext<Context>(options =>
-    options.UseSqlServer(
-        connectionString
-    ));
+    options.UseNpgsql(connectionString)
+);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -42,13 +34,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue("jwttoken", "")))
+        IssuerSigningKey = new SymmetricSecurityKey(
+              Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("jwttoken", ""))
+          )
       };
       options.Events = new JwtBearerEvents
       {
         OnAuthenticationFailed = context =>
         {
-          if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+          if (context.Exception is SecurityTokenExpiredException)
           {
             context.Response.Headers.Add("Token-Expired", "true");
           }
@@ -59,28 +53,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
           context.HandleResponse();
           context.Response.StatusCode = 401;
           context.Response.ContentType = "application/json";
-          var result = JsonSerializer.Serialize(new { 
+          var result = JsonSerializer.Serialize(new
+          {
             status = 401,
-            error = "Token is expired or invalid" });
+            error = "Token is expired or invalid"
+          });
           return context.Response.WriteAsync(result);
         }
       };
-    })
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))
-        .EnableTokenAcquisitionToCallDownstreamApi()
-            .AddMicrosoftGraph(builder.Configuration.GetSection("MicrosoftGraph"))
-            .AddInMemoryTokenCaches();
+    });
 
 builder.Services.AddAuthorization();
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-  c.SwaggerDoc("v1", new OpenApiInfo { Title = "SaudeIA API", Version = "v1" });
+  c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotelaria API", Version = "v1" });
 
-  // Adiciona a defini��o de seguran�a
   c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
   {
     In = ParameterLocation.Header,
@@ -109,26 +98,22 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-      c.SwaggerEndpoint("/swagger/v1/swagger.json", "SaudeIA API v1");
-    });
+  app.UseSwagger();
+  app.UseSwaggerUI(c =>
+  {
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "SaudeIA API v1");
+  });
 }
 
 app.UseCors(x => x
-           .AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader());
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

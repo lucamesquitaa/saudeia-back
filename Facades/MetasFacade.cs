@@ -3,28 +3,25 @@ using Microsoft.EntityFrameworkCore;
 using SaudeIA.Data;
 using SaudeIA.Facades.Interfaces;
 using SaudeIA.Models;
-using SaudeIA.Models.DTOs;
-using SaudeIA.Models.Enums;
 
 namespace SaudeIA.Facades
 {
-  public class MetasFacade : IMetasFacade
+  public class HotelFacade : IHotelFacade
   {
     private readonly Context _context;
 
-    public MetasFacade(Context context)
+    public HotelFacade(Context context)
     {
       _context = context;
     }
-    public async Task<IEnumerable<MetasModel>> GetMetasFacade(string userId)
+    public async Task<IEnumerable<DetalhesModel>> GetDetalhesFacade(string hotelId)
     {
       try
       {
-        var metas = await _context.Metas.Where(u => u.UserModelId.ToString() == userId)
-                                        .OrderByDescending( u => u.State)
+        var hotel = await _context.Hotel.Where(u => u.Id.ToString() == hotelId)
                                         .AsNoTracking().ToListAsync();
           
-        return metas;
+        return hotel;
       }
       catch (Exception e)
       {
@@ -32,41 +29,35 @@ namespace SaudeIA.Facades
       }
     }
 
-    public async Task<IActionResult> PostMetasFacade(MetasDTO metas)
+    public async Task<IActionResult> PostDetalhesFacade(DetalhesModel hotel)
     {
       try
       {
-        if (string.IsNullOrEmpty(metas.Title))
-        {
-          return new NotFoundObjectResult("Preencha o título.");
-        }
 
-        var userId = await _context.User
-                                        .Where(u => u.Id.ToString() == metas.UserId)
-                                        .Select(u => u.Id)
-                                        .FirstOrDefaultAsync();
-
-        if (userId == Guid.Empty)
+        var hotelNew = new DetalhesModel
         {
-          return new NotFoundObjectResult("Usuário associado não encontrado.");
-        }
-        var metasNew = new MetasModel
-        {
-          Id = Guid.NewGuid(),
-          Title = metas.Title,
-          UserModelId = userId,
-          State = EstadoMetaModel.EmAndamento,
-          Frequency = metas.Frequency == 1 ? FrequenciaMetaModel.Day
-                     : metas.Frequency == 2 ? FrequenciaMetaModel.Week
-                     : FrequenciaMetaModel.None,
-          Hour = metas.Hour == 1 ? HorarioMetaModel.Manha
-                     : metas.Hour == 2 ? HorarioMetaModel.Tarde
-                     : metas.Hour == 3 ? HorarioMetaModel.Noite 
-                     : HorarioMetaModel.DiaInteiro,
-          Description = metas.Description
+          Id = Guid.NewGuid(), // novo Id
+          Name = hotel.Name,
+          Url = hotel.Url,
+          Description = hotel.Description,
+          Category = hotel.Category,
+          Child = hotel.Child,
+          Pets = hotel.Pets,
+          PetsTax = hotel.PetsTax,
+          Cep = hotel.Cep,
+          Address = hotel.Address,
+          Number = hotel.Number,
+          Complement = hotel.Complement,
+          Beach = hotel.Beach,
+          Downtown = hotel.Downtown,
+          Airpot = hotel.Airpot,
+          Highway = hotel.Highway,
+          Hospital = hotel.Hospital,
+          Contacts = hotel.Contacts?.ToList() ?? new List<ContatosModel>(),
+          Photos = hotel.Photos?.ToList() ?? new List<FotosDetalhesModel>()
         };
 
-        await _context.Metas.AddAsync(metasNew);
+        await _context.Hotel.AddAsync(hotelNew);
         await _context.SaveChangesAsync();
         return new OkResult();
       }
@@ -75,40 +66,17 @@ namespace SaudeIA.Facades
         return new BadRequestObjectResult(e.Message);
       }
     }
-    public async Task<IActionResult> PatchMetasFacade(string id)
+    public async Task<IActionResult> DeleteDetalhesFacade(string id)
     {
       try
       {
-        var meta = await _context.Metas.Where(u => u.Id.ToString() == id).FirstOrDefaultAsync();
-        if (meta == null)
+        var hotel = await _context.Hotel.Where(u => u.Id.ToString() == id).FirstOrDefaultAsync();
+        if (hotel == null)
         {
-          return new BadRequestObjectResult("Meta não encontrada.");
+          return new BadRequestObjectResult("Hotel não encontrada.");
 
         }
-        if (meta.State == EstadoMetaModel.Concluido)
-          meta.State = EstadoMetaModel.EmAndamento;
-        else
-          meta.State = EstadoMetaModel.Concluido;
-        _context.Metas.Update(meta);
-        await _context.SaveChangesAsync();
-        return new OkResult();
-      }
-      catch (Exception e)
-      {
-        return new BadRequestObjectResult(e);
-      }
-    }
-    public async Task<IActionResult> DeleteMetasFacade(string id)
-    {
-      try
-      {
-        var meta = await _context.Metas.Where(u => u.Id.ToString() == id).FirstOrDefaultAsync();
-        if (meta == null)
-        {
-          return new BadRequestObjectResult("Meta não encontrada.");
-
-        }
-        _context.Metas.Remove(meta);
+        _context.Hotel.Remove(hotel);
         await _context.SaveChangesAsync();
         return new OkResult();
       }

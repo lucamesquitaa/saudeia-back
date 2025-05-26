@@ -31,10 +31,10 @@ namespace SaudeIA.Controllers
     public async Task<IActionResult> Login([FromBody] LoginModelDTO user)
     {
       var result = await _userFacade.LoginUserFacade(user);
-      if (result != null && result.Id != Guid.Empty)
+      if (result is OkResult) 
       {
         var token = GenerateJwtToken(user.Username);
-        return Ok(new { result, token });
+        return Ok(new { token });
       }
       return Unauthorized("Token de login expirado.");
     }
