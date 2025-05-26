@@ -72,6 +72,12 @@ namespace SaudeIA.Migrations
                     b.Property<bool>("Child")
                         .HasColumnType("boolean");
 
+                    b.Property<bool?>("Cleaning")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("Coffee")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Complement")
                         .HasColumnType("text");
 
@@ -80,6 +86,9 @@ namespace SaudeIA.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool?>("Downtown")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("Gym")
                         .HasColumnType("boolean");
 
                     b.Property<bool?>("Highway")
@@ -102,9 +111,15 @@ namespace SaudeIA.Migrations
                     b.Property<double?>("PetsTax")
                         .HasColumnType("double precision");
 
+                    b.Property<bool?>("Swimming")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool?>("Wifi")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
