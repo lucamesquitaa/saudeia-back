@@ -26,7 +26,9 @@ namespace SaudeIA.Facades
            {
              Id = h.Id,
              Name = h.Name,
-             Url = h.Url
+             Description = h.Description,
+             Url = h.Url,
+             PhotosStared = h.Photos.Where(w => w.Stared == true).Select(x => x.Url)
            }).ToListAsync();
 
         return hoteis;
@@ -74,10 +76,13 @@ namespace SaudeIA.Facades
           Url = f.Url,
           DetalhesModelId = novoId
         }).ToList() ?? new List<FotosDetalhesModel>();
+
         var hotelNew = new DetalhesModel
         {
           Id = novoId,
           Name = hotel.Name,
+          Rede = hotel.Rede,
+          City = hotel.City,
           Url = hotel.Url,
           Description = hotel.Description,
           Category = hotel.Category,
@@ -88,16 +93,18 @@ namespace SaudeIA.Facades
           Address = hotel.Address,
           Number = hotel.Number,
           Complement = hotel.Complement,
-          Beach = hotel.Beach,
-          Downtown = hotel.Downtown,
-          Airpot = hotel.Airpot,
-          Highway = hotel.Highway,
-          Hospital = hotel.Hospital,
-          Coffee = hotel.Coffee,
-          Wifi = hotel.Wifi,
-          Swimming = hotel.Swimming,
-          Cleaning = hotel.Cleaning,
-          Gym = hotel.Gym,
+          Lobby = hotel.Lobby,
+          Diff = hotel.Diff,
+          Beach = hotel.Beach ?? false,
+          Downtown = hotel.Downtown ?? false,
+          Airpot = hotel.Airpot ?? false,
+          Highway = hotel.Highway ?? false,
+          Hospital = hotel.Hospital ?? false,
+          Coffee = hotel.Coffee ?? false,
+          Wifi = hotel.Wifi ?? false,
+          Swimming = hotel.Swimming ?? false,
+          Cleaning = hotel.Cleaning ?? false,
+          Gym = hotel.Gym ?? false,
           Contacts = contatos,
           Photos = fotos
         };
@@ -111,6 +118,76 @@ namespace SaudeIA.Facades
         return new BadRequestObjectResult(e.Message);
       }
     }
+
+    public async Task<IActionResult> PutDetalhesfacade(string id, DetalhesModel hotel)
+    {
+      try
+      {
+        var hotelId = Guid.Parse(id);
+        var hotelExistente = await _context.Hotel
+          .Include(h => h.Contacts)
+          .Include(h => h.Photos)
+          .FirstOrDefaultAsync(h => h.Id == hotelId);
+
+        if (hotelExistente == null)
+          return new NotFoundObjectResult("Hotel não encontrado.");
+
+        // Atualiza propriedades simples
+        hotelExistente.Name = hotel.Name;
+        hotelExistente.Rede = hotel.Rede;
+        hotelExistente.City = hotel.City;
+        hotelExistente.Url = hotel.Url;
+        hotelExistente.Description = hotel.Description;
+        hotelExistente.Category = hotel.Category;
+        hotelExistente.Child = hotel.Child ?? false;
+        hotelExistente.Pets = hotel.Pets ?? false;
+        hotelExistente.PetsTax = hotel.PetsTax;
+        hotelExistente.Cep = hotel.Cep;
+        hotelExistente.Address = hotel.Address;
+        hotelExistente.Number = hotel.Number;
+        hotelExistente.Complement = hotel.Complement;
+        hotelExistente.Lobby = hotel.Lobby;
+        hotelExistente.Diff = hotel.Diff;
+        hotelExistente.Beach = hotel.Beach ?? false;
+        hotelExistente.Downtown = hotel.Downtown ?? false;
+        hotelExistente.Airpot = hotel.Airpot ?? false;
+        hotelExistente.Highway = hotel.Highway ?? false;
+        hotelExistente.Hospital = hotel.Hospital ?? false;
+        hotelExistente.Coffee = hotel.Coffee ?? false;
+        hotelExistente.Wifi = hotel.Wifi ?? false;
+        hotelExistente.Swimming = hotel.Swimming ?? false;
+        hotelExistente.Cleaning = hotel.Cleaning ?? false;
+        hotelExistente.Gym = hotel.Gym ?? false;
+
+        // Atualiza contatos
+        hotelExistente.Contacts = hotel.Contacts?.Select(c => new ContatosModel
+        {
+          Id = Guid.NewGuid(),
+          Name = c.Name,
+          Contact = c.Contact,
+          DetalhesModelId = hotelId
+        }).ToList() ?? new List<ContatosModel>();
+
+        // Atualiza fotos
+        hotelExistente.Photos = hotel.Photos?.Select(f => new FotosDetalhesModel
+        {
+          Id = Guid.NewGuid(),
+          Alt = f.Alt,
+          Url = f.Url,
+          Stared = f.Stared,
+          DetalhesModelId = hotelId
+        }).ToList() ?? new List<FotosDetalhesModel>();
+
+        _context.Hotel.Update(hotelExistente);
+        await _context.SaveChangesAsync();
+        return new OkResult();
+      }
+      catch (Exception e)
+      {
+        return new BadRequestObjectResult(e.Message);
+      }
+    }
+
     public async Task<IActionResult> DeleteDetalhesFacade(string id)
     {
       try

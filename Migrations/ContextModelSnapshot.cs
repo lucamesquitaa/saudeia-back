@@ -69,8 +69,12 @@ namespace SaudeIA.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Child")
+                    b.Property<bool?>("Child")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool?>("Cleaning")
                         .HasColumnType("boolean");
@@ -85,6 +89,9 @@ namespace SaudeIA.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Diff")
+                        .HasColumnType("text");
+
                     b.Property<bool?>("Downtown")
                         .HasColumnType("boolean");
 
@@ -97,6 +104,9 @@ namespace SaudeIA.Migrations
                     b.Property<bool?>("Hospital")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Lobby")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -105,11 +115,15 @@ namespace SaudeIA.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Pets")
+                    b.Property<bool?>("Pets")
                         .HasColumnType("boolean");
 
                     b.Property<double?>("PetsTax")
                         .HasColumnType("double precision");
+
+                    b.Property<string>("Rede")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool?>("Swimming")
                         .HasColumnType("boolean");
@@ -138,6 +152,9 @@ namespace SaudeIA.Migrations
 
                     b.Property<Guid>("DetalhesModelId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool?>("Stared")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Url")
                         .IsRequired()

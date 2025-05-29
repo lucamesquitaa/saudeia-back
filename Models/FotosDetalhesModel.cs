@@ -11,5 +11,6 @@ namespace SaudeIA.Models
     public Guid DetalhesModelId { get; set; }
     public string Alt { get; set; } = String.Empty;
     public string Url { get; set; } = String.Empty;
+    public bool? Stared { get; set; }
   }
 }

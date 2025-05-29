@@ -6,9 +6,20 @@ using SaudeIA.Data;
 using SaudeIA.Facades;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Identity.Web;
+using Google.Cloud.SecretManager.V1;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Create the client.
+var projectId = "just-stock-461116-u2";
+var secretId = "connectionstring";
+
+// 🔐 Acessa o segredo na inicialização da aplicação
+var secretClient = SecretManagerServiceClient.Create();
+var secretName = new SecretVersionName(projectId, secretId, "latest");
+
+var result = await secretClient.AccessSecretVersionAsync(secretName);
+var connectionString = result.Payload.Data.ToStringUtf8();
 
 // Serviços
 builder.Services.AddScoped<UserFacade>();
@@ -16,7 +27,6 @@ builder.Services.AddScoped<HotelFacade>();
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-string connectionString = builder.Configuration.GetValue<string>("connectionstring", "");
 var jwtToken = Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("jwttoken", ""));
 
 builder.Services.AddDbContext<Context>(options =>

@@ -12,8 +12,8 @@ using SaudeIA.Data;
 namespace SaudeIA.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250526020310_hotel")]
-    partial class hotel
+    [Migration("20250529230721_googl")]
+    partial class googl
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,7 +72,17 @@ namespace SaudeIA.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Child")
+                    b.Property<bool?>("Child")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("Cleaning")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("Coffee")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Complement")
@@ -82,7 +92,13 @@ namespace SaudeIA.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Diff")
+                        .HasColumnType("text");
+
                     b.Property<bool?>("Downtown")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("Gym")
                         .HasColumnType("boolean");
 
                     b.Property<bool?>("Highway")
@@ -90,6 +106,9 @@ namespace SaudeIA.Migrations
 
                     b.Property<bool?>("Hospital")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Lobby")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -99,15 +118,25 @@ namespace SaudeIA.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Pets")
+                    b.Property<bool?>("Pets")
                         .HasColumnType("boolean");
 
                     b.Property<double?>("PetsTax")
                         .HasColumnType("double precision");
 
+                    b.Property<string>("Rede")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("Swimming")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool?>("Wifi")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -126,6 +155,9 @@ namespace SaudeIA.Migrations
 
                     b.Property<Guid>("DetalhesModelId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool?>("Stared")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Url")
                         .IsRequired()
