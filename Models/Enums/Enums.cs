@@ -2,9 +2,9 @@
 
 namespace SaudeIA.Models.Enums
 {
-  public enum FrequenciaMetaModel
+  public enum CategoryHotelModel
   {
-    [Description("Todo dia")]
+    [Description("Hotel")]
     Day = 1,
     [Description("Toda semana")]
     Week = 2,
