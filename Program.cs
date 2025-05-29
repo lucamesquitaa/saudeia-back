@@ -104,6 +104,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+  serverOptions.ListenAnyIP(Int32.Parse(port));
+});
+
 var app = builder.Build();
 
 
