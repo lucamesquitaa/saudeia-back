@@ -21,6 +21,13 @@ var secretName = new SecretVersionName(projectId, secretId, "latest");
 var result = await secretClient.AccessSecretVersionAsync(secretName);
 var connectionString = result.Payload.Data.ToStringUtf8();
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+  serverOptions.ListenAnyIP(Int32.Parse(port));
+});
+
 // Serviços
 builder.Services.AddScoped<UserFacade>();
 builder.Services.AddScoped<HotelFacade>();
@@ -104,12 +111,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-  serverOptions.ListenAnyIP(Int32.Parse(port));
-});
 
 var app = builder.Build();
 
