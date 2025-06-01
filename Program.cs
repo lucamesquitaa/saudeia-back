@@ -7,6 +7,7 @@ using SaudeIA.Facades;
 using System.Text;
 using System.Text.Json;
 using Google.Cloud.SecretManager.V1;
+using SaudeIA.Facades.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +22,22 @@ var secretName = new SecretVersionName(projectId, secretId, "latest");
 var result = await secretClient.AccessSecretVersionAsync(secretName);
 var connectionString = result.Payload.Data.ToStringUtf8();
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+  serverOptions.ListenAnyIP(Int32.Parse(port));
+});
+
 // Serviços
 builder.Services.AddScoped<UserFacade>();
 builder.Services.AddScoped<HotelFacade>();
-
+// Registrar o Producer como singleton ou scoped
+builder.Services.AddSingleton<IRabbitMqProducer>(sp =>
+    new RabbitMQProducer(
+        builder.Configuration["RabbitMQ:HostName"],
+        builder.Configuration["RabbitMQ:QueueName"]
+    ));
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 var jwtToken = Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("jwttoken", ""));
@@ -104,6 +117,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
 var app = builder.Build();
 
 
@@ -119,7 +133,6 @@ app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader());
 
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
