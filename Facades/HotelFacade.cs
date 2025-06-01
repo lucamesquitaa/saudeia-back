@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Stream.Client.Reliable;
 using SaudeIA.Data;
 using SaudeIA.Facades.Interfaces;
 using SaudeIA.Models;
@@ -10,10 +11,13 @@ namespace SaudeIA.Facades
   public class HotelFacade : IHotelFacade
   {
     private readonly Context _context;
+    private readonly IRabbitMqProducer _producer;
 
-    public HotelFacade(Context context)
+
+    public HotelFacade(Context context, IRabbitMqProducer producer)
     {
       _context = context;
+      _producer = producer;
     }
 
     public async Task<IEnumerable<GetAllHoteis>> GetAllFacade()
@@ -111,6 +115,12 @@ namespace SaudeIA.Facades
 
         await _context.Hotel.AddAsync(hotelNew);
         await _context.SaveChangesAsync();
+        var mensagem = new MessageEvent<DetalhesModel>
+        {
+          EventType = "create",
+          Data = hotelNew
+        };
+        _producer.SendMessage(mensagem);
         return new OkResult();
       }
       catch (Exception e)
@@ -179,6 +189,12 @@ namespace SaudeIA.Facades
         }).ToList() ?? new List<FotosDetalhesModel>();
 
         _context.Hotel.Update(hotelExistente);
+        var mensagem = new MessageEvent<DetalhesModel>
+        {
+          EventType = "update",
+          Data = hotelExistente
+        };
+        _producer.SendMessage(mensagem);
         await _context.SaveChangesAsync();
         return new OkResult();
       }
