@@ -193,7 +193,7 @@ namespace SaudeIA.Facades
         // Adiciona contatos novos
         hotelExistente.Contacts = hotel.Contacts?.Select(c => new ContatosModel
         {
-          Id = c.Id != Guid.Empty ? c.Id : Guid.NewGuid(),
+          Id = Guid.NewGuid(),
           Name = c.Name,
           Contact = c.Contact,
           DetalhesModelId = hotelId
@@ -208,15 +208,13 @@ namespace SaudeIA.Facades
         // Adiciona fotos novas
         hotelExistente.Photos = hotel.Photos?.Select(f => new FotosDetalhesModel
         {
-          Id = f.Id != Guid.Empty ? f.Id : Guid.NewGuid(),
+          Id = Guid.NewGuid(),
           Alt = f.Alt,
           Url = f.Url,
           Stared = f.Stared,
           DetalhesModelId = hotelId
         }).ToList() ?? new List<FotosDetalhesModel>();
 
-        //atualizar a row da tabela hotel
-        _context.Hotel.Update(hotelExistente);
         await _context.SaveChangesAsync();
 
         var mensagem = new MessageEvent<DetalhesModel>
