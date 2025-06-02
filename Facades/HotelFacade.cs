@@ -183,32 +183,40 @@ namespace SaudeIA.Facades
         hotelExistente.Cleaning = hotel.Cleaning ?? false;
         hotelExistente.Gym = hotel.Gym ?? false;
 
-        // Remove contatos e fotos antigos
-        if (hotelExistente.Contacts.Any())
-          _context.Contacts.RemoveRange(hotelExistente.Contacts);
-
-        if (hotelExistente.Photos.Any())
-          _context.Photos.RemoveRange(hotelExistente.Photos);
+        // Adiciona contatos novos
+        // Remove contatos antigos
+        var contatosExistentes = await _context.Contacts
+            .Where(c => c.DetalhesModelId == hotelId)
+            .ToListAsync();
+        _context.Contacts.RemoveRange(contatosExistentes);
 
         // Adiciona contatos novos
         hotelExistente.Contacts = hotel.Contacts?.Select(c => new ContatosModel
         {
-          Id = Guid.NewGuid(),
+          Id = c.Id != Guid.Empty ? c.Id : Guid.NewGuid(),
           Name = c.Name,
           Contact = c.Contact,
           DetalhesModelId = hotelId
         }).ToList() ?? new List<ContatosModel>();
 
+        // Remove fotos antigas
+        var fotosExistentes = await _context.Photos
+            .Where(f => f.DetalhesModelId == hotelId)
+            .ToListAsync();
+        _context.Photos.RemoveRange(fotosExistentes);
+
         // Adiciona fotos novas
         hotelExistente.Photos = hotel.Photos?.Select(f => new FotosDetalhesModel
         {
-          Id = Guid.NewGuid(),
+          Id = f.Id != Guid.Empty ? f.Id : Guid.NewGuid(),
           Alt = f.Alt,
           Url = f.Url,
           Stared = f.Stared,
           DetalhesModelId = hotelId
         }).ToList() ?? new List<FotosDetalhesModel>();
 
+        //atualizar a row da tabela hotel
+        _context.Hotel.Update(hotelExistente);
         await _context.SaveChangesAsync();
 
         var mensagem = new MessageEvent<DetalhesModel>
