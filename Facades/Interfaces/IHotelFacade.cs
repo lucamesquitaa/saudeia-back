@@ -9,6 +9,7 @@ namespace SaudeIA.Facades.Interfaces
     public Task<IEnumerable<GetAllHoteis>> GetAllFacade();
     public Task<IEnumerable<DetalhesModel>> GetDetalhesFacade(string hotelId);
     public Task<IActionResult> PostDetalhesFacade(DetalhesModel hotel);
+    public Task<IActionResult> PutDetalhesFacade(DetalhesModel hotel, string hotelId);
     public Task<IActionResult> DeleteDetalhesFacade(string id);
   }
 }

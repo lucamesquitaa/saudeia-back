@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SaudeIA.Data;
@@ -11,9 +12,11 @@ using SaudeIA.Data;
 namespace SaudeIA.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250602124552_updates")]
+    partial class updates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,7 @@ namespace SaudeIA.Migrations
 
                     b.HasIndex("DetalhesModelId");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("ContatosModel");
                 });
 
             modelBuilder.Entity("SaudeIA.Models.DetalhesModel", b =>
@@ -164,7 +167,7 @@ namespace SaudeIA.Migrations
 
                     b.HasIndex("DetalhesModelId");
 
-                    b.ToTable("Photos");
+                    b.ToTable("FotosDetalhesModel");
                 });
 
             modelBuilder.Entity("SaudeIA.Models.ContatosModel", b =>

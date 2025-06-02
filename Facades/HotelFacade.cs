@@ -63,6 +63,13 @@ namespace SaudeIA.Facades
     {
       try
       {
+        // Verifica se já existe um hotel com a mesma URL
+        var urlHotel = await _context.Hotel.FirstOrDefaultAsync(u => u.Url == hotel.Url);
+        if (urlHotel != null)
+        {
+          return new BadRequestObjectResult("Já existe um hotel cadastrado com esta URL.");
+        }
+
         var novoId = Guid.NewGuid();
 
         var contatos = hotel.Contacts?.Select(c => new ContatosModel
@@ -78,6 +85,7 @@ namespace SaudeIA.Facades
           Id = Guid.NewGuid(),
           Alt = f.Alt,
           Url = f.Url,
+          Stared = f.Stared,
           DetalhesModelId = novoId
         }).ToList() ?? new List<FotosDetalhesModel>();
 
@@ -92,7 +100,7 @@ namespace SaudeIA.Facades
           Category = hotel.Category,
           Child = hotel.Child,
           Pets = hotel.Pets,
-          PetsTax = hotel.PetsTax,
+          PetsTax = hotel.PetsTax ?? 0,
           Cep = hotel.Cep,
           Address = hotel.Address,
           Number = hotel.Number,
@@ -113,8 +121,13 @@ namespace SaudeIA.Facades
           Photos = fotos
         };
 
+        // Adiciona explicitamente nas tabelas filhas
         await _context.Hotel.AddAsync(hotelNew);
+        await _context.Contacts.AddRangeAsync(contatos);
+        await _context.Photos.AddRangeAsync(fotos);
+
         await _context.SaveChangesAsync();
+
         var mensagem = new MessageEvent<DetalhesModel>
         {
           EventType = "create",
@@ -129,15 +142,16 @@ namespace SaudeIA.Facades
       }
     }
 
-    public async Task<IActionResult> PutDetalhesfacade(string id, DetalhesModel hotel)
+
+    public async Task<IActionResult> PutDetalhesFacade(DetalhesModel hotel, string id)
     {
       try
       {
         var hotelId = Guid.Parse(id);
         var hotelExistente = await _context.Hotel
-          .Include(h => h.Contacts)
-          .Include(h => h.Photos)
-          .FirstOrDefaultAsync(h => h.Id == hotelId);
+            .Include(h => h.Contacts)
+            .Include(h => h.Photos)
+            .FirstOrDefaultAsync(h => h.Id == hotelId);
 
         if (hotelExistente == null)
           return new NotFoundObjectResult("Hotel não encontrado.");
@@ -169,7 +183,14 @@ namespace SaudeIA.Facades
         hotelExistente.Cleaning = hotel.Cleaning ?? false;
         hotelExistente.Gym = hotel.Gym ?? false;
 
-        // Atualiza contatos
+        // Remove contatos e fotos antigos
+        if (hotelExistente.Contacts.Any())
+          _context.Contacts.RemoveRange(hotelExistente.Contacts);
+
+        if (hotelExistente.Photos.Any())
+          _context.Photos.RemoveRange(hotelExistente.Photos);
+
+        // Adiciona contatos novos
         hotelExistente.Contacts = hotel.Contacts?.Select(c => new ContatosModel
         {
           Id = Guid.NewGuid(),
@@ -178,7 +199,7 @@ namespace SaudeIA.Facades
           DetalhesModelId = hotelId
         }).ToList() ?? new List<ContatosModel>();
 
-        // Atualiza fotos
+        // Adiciona fotos novas
         hotelExistente.Photos = hotel.Photos?.Select(f => new FotosDetalhesModel
         {
           Id = Guid.NewGuid(),
@@ -188,14 +209,15 @@ namespace SaudeIA.Facades
           DetalhesModelId = hotelId
         }).ToList() ?? new List<FotosDetalhesModel>();
 
-        _context.Hotel.Update(hotelExistente);
+        await _context.SaveChangesAsync();
+
         var mensagem = new MessageEvent<DetalhesModel>
         {
           EventType = "update",
           Data = hotelExistente
         };
         _producer.SendMessage(mensagem);
-        await _context.SaveChangesAsync();
+
         return new OkResult();
       }
       catch (Exception e)
@@ -203,6 +225,7 @@ namespace SaudeIA.Facades
         return new BadRequestObjectResult(e.Message);
       }
     }
+
 
     public async Task<IActionResult> DeleteDetalhesFacade(string id)
     {
