@@ -136,7 +136,7 @@ namespace SaudeIA.Facades
       }
     }
 
-    public async Task<IActionResult> PutDetalhesfacade(DetalhesModel hotel, string id)
+    public async Task<IActionResult> PutDetalhesFacade(DetalhesModel hotel, string id)
     {
       try
       {
