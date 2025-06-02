@@ -63,6 +63,13 @@ namespace SaudeIA.Facades
     {
       try
       {
+        // Verifica se já existe um hotel com a mesma URL
+        var urlHotel = await _context.Hotel.FirstOrDefaultAsync(u => u.Url == hotel.Url);
+        if (urlHotel != null)
+        {
+          return new BadRequestObjectResult("Já existe um hotel cadastrado com esta URL.");
+        }
+
         var novoId = Guid.NewGuid();
 
         var contatos = hotel.Contacts?.Select(c => new ContatosModel
@@ -129,7 +136,7 @@ namespace SaudeIA.Facades
       }
     }
 
-    public async Task<IActionResult> PutDetalhesfacade(string id, DetalhesModel hotel)
+    public async Task<IActionResult> PutDetalhesfacade(DetalhesModel hotel, string id)
     {
       try
       {

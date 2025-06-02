@@ -52,6 +52,14 @@ namespace SaudeIA.Controllers
       return await _hotelFacade.PostDetalhesFacade(obj);
     }
 
+    // PUT api/<ValuesController>
+    [Authorize]
+    [HttpPut("{hotelId}")]
+    public async Task<IActionResult> Put([FromBody] DetalhesModel obj, string hotelId)
+    {
+      return await _hotelFacade.PutDetalhesfacade(obj, hotelId);
+    }
+
     // DELETE api/<ValuesController>/5
     [Authorize]
     [HttpDelete("{id}")]
