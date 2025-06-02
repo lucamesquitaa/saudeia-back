@@ -193,7 +193,6 @@ namespace SaudeIA.Facades
         // Adiciona contatos novos
         hotelExistente.Contacts = hotel.Contacts?.Select(c => new ContatosModel
         {
-          Id = Guid.NewGuid(),
           Name = c.Name,
           Contact = c.Contact,
           DetalhesModelId = hotelId
@@ -208,7 +207,6 @@ namespace SaudeIA.Facades
         // Adiciona fotos novas
         hotelExistente.Photos = hotel.Photos?.Select(f => new FotosDetalhesModel
         {
-          Id = Guid.NewGuid(),
           Alt = f.Alt,
           Url = f.Url,
           Stared = f.Stared,
