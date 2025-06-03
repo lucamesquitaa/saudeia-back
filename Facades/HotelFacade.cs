@@ -145,18 +145,20 @@ namespace SaudeIA.Facades
 
     public async Task<IActionResult> PutDetalhesFacade(DetalhesModel hotel, string id)
     {
+      if (!Guid.TryParse(id, out var hotelId))
+        return new BadRequestObjectResult("Id inválido.");
+
+      using var transaction = await _context.Database.BeginTransactionAsync();
+
       try
       {
-        var hotelId = Guid.Parse(id);
-        var hotelExistente = await _context.Hotel
-            .Include(h => h.Contacts)
-            .Include(h => h.Photos)
-            .FirstOrDefaultAsync(h => h.Id == hotelId);
+        // Buscar hotel
+        var hotelExistente = await _context.Hotel.FirstOrDefaultAsync(h => h.Id == hotelId);
 
         if (hotelExistente == null)
           return new NotFoundObjectResult("Hotel não encontrado.");
 
-        // Atualiza propriedades simples
+        // Atualiza dados principais do hotel
         hotelExistente.Name = hotel.Name;
         hotelExistente.Rede = hotel.Rede;
         hotelExistente.City = hotel.City;
@@ -183,39 +185,55 @@ namespace SaudeIA.Facades
         hotelExistente.Cleaning = hotel.Cleaning ?? false;
         hotelExistente.Gym = hotel.Gym ?? false;
 
-        // Adiciona contatos novos
-        // Remove contatos antigos
+        _context.Hotel.Update(hotelExistente);
+        await _context.SaveChangesAsync();
+
+        // 🔥 Atualiza contatos (remove todos e adiciona os novos)
         var contatosExistentes = await _context.Contacts
             .Where(c => c.DetalhesModelId == hotelId)
             .ToListAsync();
+
         _context.Contacts.RemoveRange(contatosExistentes);
+        await _context.SaveChangesAsync();
 
-        // Adiciona contatos novos
-        hotelExistente.Contacts = hotel.Contacts?.Select(c => new ContatosModel
+        if (hotel.Contacts != null && hotel.Contacts.Any())
         {
-          Id = Guid.NewGuid(),
-          Name = c.Name,
-          Contact = c.Contact,
-          DetalhesModelId = hotelId
-        }).ToList() ?? new List<ContatosModel>();
+          var novosContatos = hotel.Contacts.Select(c => new ContatosModel
+          {
+            Id = Guid.NewGuid(),
+            Name = c.Name,
+            Contact = c.Contact,
+            DetalhesModelId = hotelId
+          });
 
-        // Remove fotos antigas
+          await _context.Contacts.AddRangeAsync(novosContatos);
+          await _context.SaveChangesAsync();
+        }
+
+        // 🔥 Atualiza fotos (remove todas e adiciona as novas)
         var fotosExistentes = await _context.Photos
             .Where(f => f.DetalhesModelId == hotelId)
             .ToListAsync();
+
         _context.Photos.RemoveRange(fotosExistentes);
-
-        // Adiciona fotos novas
-        hotelExistente.Photos = hotel.Photos?.Select(f => new FotosDetalhesModel
-        {
-          Id = Guid.NewGuid(),
-          Alt = f.Alt,
-          Url = f.Url,
-          Stared = f.Stared,
-          DetalhesModelId = hotelId
-        }).ToList() ?? new List<FotosDetalhesModel>();
-
         await _context.SaveChangesAsync();
+
+        if (hotel.Photos != null && hotel.Photos.Any())
+        {
+          var novasFotos = hotel.Photos.Select(f => new FotosDetalhesModel
+          {
+            Id = Guid.NewGuid(),
+            Alt = f.Alt,
+            Url = f.Url,
+            Stared = f.Stared,
+            DetalhesModelId = hotelId
+          });
+
+          await _context.Photos.AddRangeAsync(novasFotos);
+          await _context.SaveChangesAsync();
+        }
+
+        await transaction.CommitAsync();
 
         var mensagem = new MessageEvent<DetalhesModel>
         {
@@ -226,11 +244,14 @@ namespace SaudeIA.Facades
 
         return new OkResult();
       }
-      catch (Exception e)
+      catch (Exception ex)
       {
-        return new BadRequestObjectResult(e.Message);
+        await transaction.RollbackAsync();
+        return new BadRequestObjectResult($"Erro ao atualizar hotel: {ex.Message}");
       }
     }
+
+
 
 
     public async Task<IActionResult> DeleteDetalhesFacade(string id)
